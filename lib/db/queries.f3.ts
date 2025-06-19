@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { and, count, desc, eq, gte, lte, like } from 'drizzle-orm';
+import { and, count, desc, eq, gte, lte, like, sql, asc } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -144,6 +144,56 @@ export async function getBackblastsByAO({
   }
 }
 
+export async function getBackblastsByAOAndDateRange({
+  ao,
+  startDate,
+  endDate,
+  limit = 20,
+  offset = 0,
+}: {
+  ao: string;
+  startDate: string;
+  endDate: string;
+  limit?: number;
+  offset?: number;
+}) {
+  try {
+    console.log('Debug: getBackblastsByAOAndDateRange query params:', {
+      ao,
+      startDate,
+      endDate,
+      limit,
+      offset,
+    });
+
+    const results = await db
+      .select()
+      .from(backblast)
+      .where(
+        and(
+          eq(backblast.ao, ao),
+          gte(backblast.date, startDate),
+          lte(backblast.date, endDate),
+        ),
+      )
+      .orderBy(desc(backblast.date))
+      .limit(limit)
+      .offset(offset);
+
+    console.log(
+      `Debug: Found ${results.length} backblasts for AO ${ao} between ${startDate} and ${endDate}`,
+    );
+
+    return results;
+  } catch (error) {
+    console.error('Error in getBackblastsByAOAndDateRange:', error);
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get backblasts by AO and date range',
+    );
+  }
+}
+
 export async function getBackblastsByQ({
   q,
   limit = 50,
@@ -225,6 +275,7 @@ export async function deleteBackblastById({ id }: { id: string }) {
   }
 }
 
+/** @todo extend to support distinct pax counts vs cumulative */
 export async function getBackblastStats({
   startDate,
   endDate,
@@ -236,14 +287,19 @@ export async function getBackblastStats({
     const [stats] = await db
       .select({
         totalBackblasts: count(backblast.id),
-        totalPax: count(backblast.pax_count),
-        totalFNGs: count(backblast.fng_count),
+        totalPax: sql<number>`COALESCE(SUM(${backblast.pax_count}), 0)`,
+        totalFNGs: sql<number>`COALESCE(SUM(${backblast.fng_count}), 0)`,
+        averagePaxPerWorkout: sql<number>`FLOOR(COALESCE(AVG(${backblast.pax_count}), 0))`,
       })
       .from(backblast)
       .where(and(gte(backblast.date, startDate), lte(backblast.date, endDate)))
       .execute();
 
-    return stats;
+    return {
+      ...stats,
+      startDate,
+      endDate,
+    };
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
@@ -287,7 +343,7 @@ export async function getTopQs({
   endDate: string;
 }) {
   try {
-    return await db
+    const results = await db
       .select({
         q: backblast.q,
         count: count(backblast.id),
@@ -297,6 +353,12 @@ export async function getTopQs({
       .groupBy(backblast.q)
       .orderBy(desc(count(backblast.id)))
       .limit(limit);
+
+    return {
+      results,
+      startDate,
+      endDate,
+    };
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to get top Qs');
   }
@@ -335,20 +397,35 @@ export async function getRecentBackblasts({
   limit?: number;
 } = {}) {
   try {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    const cutoffDateString = cutoffDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
 
     return await db
       .select()
       .from(backblast)
-      .where(gte(backblast.date, cutoffDateString))
+      .where(gte(backblast.date, startDate.toISOString().split('T')[0]))
       .orderBy(desc(backblast.date), desc(backblast.ingestedAt))
       .limit(limit);
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get recent backblasts',
+    );
+  }
+}
+
+export async function getDistinctAOs() {
+  try {
+    const results = await db
+      .selectDistinct({ ao: backblast.ao })
+      .from(backblast)
+      .orderBy(asc(backblast.ao));
+
+    return results.map((r) => r.ao);
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get distinct AOs',
     );
   }
 }
