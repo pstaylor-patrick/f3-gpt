@@ -1,4 +1,4 @@
-import { cookies , headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 import { Chat } from '@/components/chat';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
@@ -23,14 +23,14 @@ function isSocialMediaCrawler(userAgent: string): boolean {
     /googlebot/i,
     /applebot/i,
   ];
-  
-  return crawlerPatterns.some(pattern => pattern.test(userAgent));
+
+  return crawlerPatterns.some((pattern) => pattern.test(userAgent));
 }
 
 export default async function Page() {
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
-  
+
   // If this is a social media crawler, just return a simple div
   // The metadata will be handled by the layout
   if (isSocialMediaCrawler(userAgent)) {

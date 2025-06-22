@@ -22,8 +22,8 @@ function isSocialMediaCrawler(userAgent: string): boolean {
     /spider/i,
     /bot/i,
   ];
-  
-  return crawlerPatterns.some(pattern => pattern.test(userAgent));
+
+  return crawlerPatterns.some((pattern) => pattern.test(userAgent));
 }
 
 export async function middleware(request: NextRequest) {
