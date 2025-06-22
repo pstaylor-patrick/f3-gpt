@@ -10,10 +10,46 @@ import { getEnv } from '@/lib/env';
 
 const { NEXT_PUBLIC_REGION_NAME: REGION_NAME } = getEnv();
 
+const title = `F3 ${REGION_NAME} GPT`;
+const description = `F3 ${REGION_NAME} GPT - AI-powered chatbot for F3 workouts`;
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.freemensworkout.org'),
-  title: `F3 ${REGION_NAME} GPT`,
-  description: 'F3 chatbot using the Vercel AI SDK.',
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: 'https://chat.freemensworkout.org',
+    siteName: title,
+    images: [
+      {
+        url: '/f3-compass-2025-05-27-og-week-opengraph.jpg',
+        width: 1200,
+        height: 630,
+        alt: description,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['/f3-compass-2025-05-27-og-week-twitter.jpg'],
+  },
+  robots: {
+    index: false, // @todo true
+    follow: false, // @todo true
+    googleBot: {
+      index: false, // @todo true
+      follow: false, // @todo true
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export const viewport = {

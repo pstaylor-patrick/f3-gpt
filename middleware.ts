@@ -2,8 +2,33 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { guestRegex, isDevelopmentEnvironment } from './lib/constants';
 
+// Function to detect social media crawlers that need access to OpenGraph metadata
+function isSocialMediaCrawler(userAgent: string): boolean {
+  const crawlerPatterns = [
+    /facebookexternalhit/i,
+    /twitterbot/i,
+    /linkedinbot/i,
+    /slackbot/i,
+    /whatsapp/i,
+    /telegrambot/i,
+    /discordbot/i,
+    /skypeuripreview/i,
+    /msn/i,
+    /bingbot/i,
+    /googlebot/i,
+    /applebot/i,
+    // Generic social media crawlers
+    /crawler/i,
+    /spider/i,
+    /bot/i,
+  ];
+  
+  return crawlerPatterns.some(pattern => pattern.test(userAgent));
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const userAgent = request.headers.get('user-agent') || '';
 
   /*
    * Playwright starts the dev server and requires a 200 status to
@@ -14,6 +39,12 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+
+  // Allow social media crawlers to access pages without authentication
+  // This is essential for OpenGraph metadata to be accessible
+  if (isSocialMediaCrawler(userAgent)) {
     return NextResponse.next();
   }
 
