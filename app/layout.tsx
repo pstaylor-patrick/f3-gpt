@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: title,
     images: [
       {
-        url: '/f3-compass-2025-05-27-og-week-opengraph.jpg',
+        url: '/opengraph-image.jpg',
         width: 1200,
         height: 630,
         alt: description,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title,
     description,
-    images: ['/f3-compass-2025-05-27-og-week-twitter.jpg'],
+    images: ['/twitter-image.jpg'],
   },
   robots: {
     index: false, // @todo true
