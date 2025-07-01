@@ -25,3 +25,25 @@ export const backblast = f3Schema.table('Backblast', {
 });
 
 export type Backblast = InferSelectModel<typeof backblast>;
+
+export const slackUser = f3Schema.table('SlackUser', {
+  userId: varchar('userId', { length: 255 }).primaryKey(),
+  displayName: varchar('displayName', { length: 255 }).notNull(),
+  fullName: varchar('fullName', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  ingestedAt: timestamp('ingestedAt').notNull().defaultNow(),
+});
+
+export type SlackUser = InferSelectModel<typeof slackUser>;
+
+export const slackMessage = f3Schema.table('SlackMessage', {
+  sk: varchar('sk', { length: 255 }).primaryKey(),
+  channelId: varchar('channelId', { length: 255 }).notNull(),
+  channelName: varchar('channelName', { length: 255 }).notNull(),
+  messageId: varchar('messageId', { length: 255 }).notNull(),
+  messageText: text('messageText').notNull(),
+  messageAuthor: varchar('messageAuthor', { length: 255 }).references(() => slackUser.userId).notNull(),
+  ingestedAt: timestamp('ingestedAt').notNull().defaultNow(),
+});
+
+export type SlackMessage = InferSelectModel<typeof slackMessage>;
