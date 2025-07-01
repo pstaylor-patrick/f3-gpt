@@ -17,6 +17,7 @@ const envSchema = z
     OPENAI_API_KEY: z.string().min(1),
     POSTGRES_URL: z.string().min(1),
     REDIS_URL: z.string().min(1),
+    SLACK_BOT_USER_OAUTH_TOKEN: z.string().min(1),
     XAI_API_KEY: z.string().min(1),
   })
   .required()
@@ -34,6 +35,7 @@ const validateEnv = (): Env => {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     POSTGRES_URL: process.env.POSTGRES_URL,
     REDIS_URL: process.env.REDIS_URL,
+    SLACK_BOT_USER_OAUTH_TOKEN: process.env.SLACK_BOT_USER_OAUTH_TOKEN,
     XAI_API_KEY: process.env.XAI_API_KEY,
   });
 

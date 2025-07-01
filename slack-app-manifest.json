@@ -1,0 +1,34 @@
+{
+    "display_information": {
+        "name": "F3 GPT",
+        "description": "Get Right, Live Right, Lead Right, Leave Right",
+        "background_color": "#AD0C02"
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "F3 GPT",
+            "always_online": true
+        }
+    },
+    "oauth_config": {
+        "scopes": {
+            "bot": [
+                "channels:read",
+                "channels:history",
+                "groups:read",
+                "groups:history",
+                "im:read",
+                "im:history",
+                "mpim:read",
+                "mpim:history",
+                "users:read",
+                "users:read.email"
+            ]
+        }
+    },
+    "settings": {
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}

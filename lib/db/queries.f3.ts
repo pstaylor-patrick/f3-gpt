@@ -6,7 +6,7 @@ import postgres from 'postgres';
 
 import { backblast } from './schema.f3';
 import { ChatSDKError } from '../errors';
-import { generateSk } from './utils.f3';
+import { generateSk } from '@/scripts/db/backblasts/seed/utils';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth

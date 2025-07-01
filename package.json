@@ -17,7 +17,11 @@
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
     "db:reset": "pnpm dlx bun scripts/db/reset/reset.ts",
+    "db:reset:backblasts": "pnpm dlx bun scripts/db/backblasts/reset/reset.ts",
+    "db:reset:slack": "pnpm dlx bun scripts/db/slack/reset/reset.ts",
     "db:seed": "pnpm dlx bun scripts/db/seed/seed.ts",
+    "db:seed:backblasts": "pnpm dlx bun scripts/db/backblasts/seed/seed.ts",
+    "db:seed:slack": "pnpm dlx bun scripts/db/slack/seed/seed.ts",
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
   },
   "dependencies": {
@@ -40,6 +44,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.3",
     "@radix-ui/react-visually-hidden": "^1.1.0",
+    "@slack/web-api": "^7.9.3",
     "@vercel/analytics": "^1.3.1",
     "@vercel/blob": "^0.24.1",
     "@vercel/functions": "^2.0.0",
